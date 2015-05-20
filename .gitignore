@@ -2,3 +2,5 @@ app/bower_components
 .bowerrc
 basic_construction_rule.json
 .idea
+bower_components
+node_modules
