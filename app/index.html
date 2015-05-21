@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <title>Google Phone Gallery</title>
-  <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
+  <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css">
   <link rel="stylesheet" href="css/app.css">
   <link rel="stylesheet" href="css/animations.css">
 
@@ -22,8 +22,134 @@
 </head>
 <body>
 <h1>Bom Admin</h1>
-  <div class="view-container">
-    <div ng-view class="view-frame"></div>
+  <div class="view-container" ng-controller="PhoneListCtrl">
+
+      <div class="container-fluid">
+          <div class="row">
+              <button type="button" class="btn btn-default btn-l"
+                      ng-click="onUpload()" ng-show="!isShowBomList">上传</button>
+
+              <div ng-show="isShowBomList">
+                  <button type="button" class="btn btn-default btn-l" ng-click="onUpload()">上传</button>
+                  <button type="button" class="btn btn-default btn-l" ng-click="onDownLoad()">下载</button>
+                  <br/>
+                  <div class="dataSwitch">
+                      <a href="" ng-click="onCustomizeDynamicTabClk()">手动输入项目（可选项）</a> |
+                      <a href="" ng-click="onCustomizeStaticTabClk()">手动输入项目（必有项）</a> |
+                      <a href="" ng-click="onAutoTabClk()">自动生成项目</a>
+                  </div>
+              </div>
+
+
+          </div>
+          <div class="row" ng-show="isShowBomList">
+              <div class="col-md-4" >
+                  <button type="button" class="btn btn-default btn-l" ng-click="onBomSelected()">添加</button>
+
+                  <ul class="phones">
+                      <li ng-repeat="item in bindData"
+                          class="phone-listing" ng-click="onBomSelected($index)">
+                          <a class="bomcategoryId" href="javascript:void(0)">{{item.bomcategoryId || ""}}</a>
+                          <a class="bomcategoryLabel" href="javascript:void(0)">{{item.bomcategoryLabel || ""}}</a>
+                      </li>
+                  </ul>
+              </div>
+              <div class="col-md-4" ng-show="isShowEditBomUI">
+                  Id: {{selectedItem.bomcategoryId}}
+                  <br/>
+                  <div>
+                      <form name="bomform" class="css-form" novalidate>
+                          报价类目:
+                          <input type="text" ng-model="selectedItem.bomcategoryLabel" name="bomcategoryLabel" required=""/>
+                          <br />
+                          <div ng-show="bomform.bomcategoryLabel.$touched" class="errorMsg">
+                              <div ng-show="bomform.bomcategoryLabel.$error.required">
+                                  报价类目不能为空
+                              </div>
+                          </div>
+
+                          <br/>
+                          施工子项：
+                          <button type="button" class="btn btn-default btn-xs" ng-click="onOptionSelected()">添加</button>
+                          <br/>
+
+
+
+
+                          <ul class="phones" >
+                              <li ng-click="onOptionSelected($index)"
+                                  ng-repeat="option in (selectedItem.projectOptions || [])">
+                                  <a href="javascript:void(0)">{{option.projectLabel}}</a>
+                              </li>
+                          </ul>
+                          <div ng-show="selectedItem.projectOptions && selectedItem.projectOptions.length == 0" class="errorMsg">
+                              施工子项不能为空
+                          </div>
+                      </form>
+
+                      <button type="button" class="btn btn-default btn-xs" ng-click="onBomSubmit()" ng-disabled="bomform.$invalid || (selectedItem.projectOptions && selectedItem.projectOptions.length == 0)">提交</button>
+                      <button type="button" class="btn btn-default btn-xs" ng-click="onBomDelete()" ng-show="selectedItemIndex!=-1">删除</button>
+
+                  </div>
+              </div>
+              <div class="col-md-4" ng-show="isShowEditOptionUI">
+                  <form name="optionform" class="css-form" novalidate>
+                      施工子项名称：
+                      <input type="text" ng-model="selectedOption.projectLabel" name="projectLabel" required="" />
+                      <br/>
+                      <div ng-show="optionform.projectLabel.$touched" class="errorMsg">
+                          <div ng-show="optionform.projectLabel.$error.required">施工子项名称不能为空</div>
+                      </div>
+
+
+                      <br/>
+                      施工子项单位：
+                      <select ng-model="selectedOption.projectUnit">
+                          <option ng-repeat="(key, value) in unitEnum" value="{{key}}">{{value}}</option>
+                      </select>
+
+
+                      <br/>
+                      施工子项说明：
+                      <input type="text" ng-model="selectedOption.projectDesc" name="projectDesc" required=""/>
+                      <div ng-show="optionform.projectDesc.$touched" class="errorMsg">
+                          <div ng-show="optionform.projectDesc.$error.required">projectDesc should not be empty</div>
+                      </div>
+
+
+                      <br/>
+                      施工子项编号:
+                      <input type="text" ng-model="selectedOption.projectSN" name="projectSN" required=""/>
+                      <div ng-show="optionform.projectSN.$touched" class="errorMsg">
+                          <div ng-show="optionform.projectSN.$error.required">projectSN should not be empty</div>
+                      </div>
+
+
+                      <br/>
+                      施工子项价钱:
+                      <input type="number" ng-model="selectedOption.projectPrice" name="projectPrice" required=""/>
+                      <div ng-show="optionform.projectPrice.$touched" class="errorMsg">
+                          <div ng-show="optionform.projectPrice.$error.number">projectPrice should be number</div>
+                      </div>
+                  </form>
+                  <br/>
+                  <button type="button" class="btn btn-default btn-xs" ng-click="onOptionSubmit()" ng-disabled="optionform.$invalid">提交</button>
+                  <button type="button" class="btn btn-default btn-xs" ng-click="onOptionDelete()" ng-show="selectedOptionIndex!=-1">删除</button>
+
+              </div>
+
+
+
+              <form name="uploadForm" class="uploadForm">
+                  <input type="file" multiple="" accept="application/json"
+                         ng-model="rawData" onchange="angular.element(this).scope().onFileSelected(event);" >
+              </form>
+          </div>
+      </div>
+
+
+
+
   </div>
 
 </body>
